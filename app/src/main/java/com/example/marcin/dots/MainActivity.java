@@ -5,6 +5,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 
 import pl.tajchert.waitingdots.DotsDrawable;
+import pl.tajchert.waitingdots.DotsTextView;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -13,8 +14,8 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        View view = findViewById(R.id.progress);
-        view.setBackground(new DotsDrawable(0xffff0000));
+        //View view = findViewById(R.id.progress);
+        //view.setBackground(new DotsDrawable(0xffff0000));
     }
 
 }
