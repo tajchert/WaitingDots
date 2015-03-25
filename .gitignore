@@ -5,4 +5,7 @@
 .DS_Store
 /build
 /captures
-Dots.iml
+
+#Idea
+*.iml
+.idea/
