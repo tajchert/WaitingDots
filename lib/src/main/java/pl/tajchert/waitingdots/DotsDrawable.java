@@ -1,4 +1,4 @@
-package com.example.marcin.dots;
+package pl.tajchert.waitingdots;
 
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
@@ -10,7 +10,7 @@ import android.graphics.drawable.Drawable;
  * Created by Marcin on 2015-03-25.
  */
 public class DotsDrawable extends Drawable {
-    private static final float JUMP_PERIOD = 300.0f;
+    private static final float JUMP_PERIOD = 400.0f;
     private final long startTime;
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     int color;
