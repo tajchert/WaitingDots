@@ -14,7 +14,7 @@ public class DotsTextView extends LinearLayout {
     private int textWidth;
     private int textHeight;
 
-    private static final int JUMP_PERIOD = 150;
+    private static final int JUMP_PERIOD = 175;
     private long startTime;
 
     public DotsTextView(Context context) {
@@ -48,20 +48,19 @@ public class DotsTextView extends LinearLayout {
     @Override
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        float time = (System.currentTimeMillis()-startTime)/JUMP_PERIOD;
-
+        float time = (float)(System.currentTimeMillis()-startTime)/JUMP_PERIOD;
 
         for (int i = 3; i >= 0; i--) {
-            float y = (float) (this.textHeight / 2 - (this.textHeight - 15)*Math.max(0, Math.sin(time+i/3.0f)));
+            float y = (float) (this.textHeight / 2 - (this.textHeight - 8)*Math.max(0, Math.sin(time+i/1.5f)));
             switch (i){
-                case 0:
-                    dotOne.setPadding(0, -Math.round(y), 0, 0);
+                case 2:
+                    dotOne.setTranslationY(-y);
                     break;
                 case 1:
-                    dotTwo.setPadding(0, -Math.round(y), 0, 0);
+                    dotTwo.setTranslationY(-y);
                     break;
-                case 2:
-                    dotThree.setPadding(0, -Math.round(y), 0, 0);
+                case 0:
+                    dotThree.setTranslationY(-y);
                     break;
             }
         }

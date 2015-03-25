@@ -2,11 +2,6 @@ package com.example.marcin.dots;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.view.View;
-
-import pl.tajchert.waitingdots.DotsDrawable;
-import pl.tajchert.waitingdots.DotsTextView;
-
 
 public class MainActivity extends ActionBarActivity {
 
