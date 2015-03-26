@@ -1,4 +1,4 @@
-package pl.tajchert.waitingdots;
+package pl.tajchert.waitingdots.sample;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

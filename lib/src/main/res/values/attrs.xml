@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="dots">
+    <declare-styleable name="WaitingDots">
         <attr name="android:textSize" />
         <attr name="dotsColor" format="color" />
         <attr name="period" format="integer" />
+        <attr name="jumpHeight" format="integer" />
+        <attr name="autoplay" format="boolean" />
     </declare-styleable>
 </resources>

@@ -1,4 +1,4 @@
-package com.example.marcin.dots;
+package pl.tajchert.sample;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
