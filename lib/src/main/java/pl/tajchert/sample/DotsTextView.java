@@ -25,6 +25,11 @@ public class DotsTextView extends LinearLayout {
     private int period;
     private long startTime;
 
+    private boolean lockDotOne;
+    private boolean lockDotTwo;
+    private boolean lockDotThree;
+
+
     public DotsTextView(Context context) {
         super(context);
         init(context, null);
@@ -44,15 +49,14 @@ public class DotsTextView extends LinearLayout {
     private void init(Context context, AttributeSet attrs) {
         if(attrs != null){
             TypedArray typedArray = context.obtainStyledAttributes(attrs,R.styleable.WaitingDots);
-            textColor = typedArray.getColor(R.styleable.WaitingDots_dotsColor, Color.GRAY);
+            textColor = typedArray.getColor(R.styleable.WaitingDots_android_textColor, Color.GRAY);
             period = typedArray.getInt(R.styleable.WaitingDots_period, 175);
             textSize = typedArray.getDimensionPixelSize(R.styleable.WaitingDots_android_textSize, 14);
             jumpHeight = typedArray.getInt(R.styleable.WaitingDots_jumpHeight, (textSize / 3));
             autoPlay = typedArray.getBoolean(R.styleable.WaitingDots_autoplay, true);
             typedArray.recycle();
         }
-
-        startTime = System.currentTimeMillis();
+        resetPosition();
         inflate(getContext(), R.layout.dots_text_view, this);
         dotOne = (TextView) findViewById(R.id.dot1);
         dotTwo = (TextView) findViewById(R.id.dot2);
@@ -76,21 +80,20 @@ public class DotsTextView extends LinearLayout {
         dotThree.setTextColor(textColor);
     }
 
-    private void resetPosition() {
-        startTime = System.currentTimeMillis();
-        dotOne.setTranslationY(0);
-        dotTwo.setTranslationY(0);
-        dotThree.setTranslationY(0);
+    public void resetPosition() {
+        startTime = System.currentTimeMillis() + period;
     }
 
     public void start() {
-        this.setWillNotDraw(false);
         isPlaying = true;
+        lockDotOne = false;
+        lockDotTwo = false;
+        lockDotThree = false;
+        resetPosition();
+        this.setWillNotDraw(false);
     }
 
     public void stop() {
-        this.setWillNotDraw(true);
-        resetPosition();
         isPlaying = false;
     }
 
@@ -121,18 +124,54 @@ public class DotsTextView extends LinearLayout {
         super.onDraw(canvas);
         float time = (float)(System.currentTimeMillis() - startTime) / period;
 
-        for (int i = 3; i >= 0; i--) {
-            float y = (float) -(jumpHeight * Math.max(0, Math.sin(time + i / 1.5f)));
-            switch (i){
-                case 2:
-                    dotOne.setTranslationY(y);
-                    break;
-                case 1:
-                    dotTwo.setTranslationY(y);
-                    break;
-                case 0:
-                    dotThree.setTranslationY(y);
-                    break;
+        if(isPlaying) {
+            for (int i = 3; i >= 0; i--) {
+                float y = (float) -(jumpHeight * Math.max(0, Math.sin(time + i / 1.5f)));
+                switch (i) {
+                    case 2:
+                        dotOne.setTranslationY(y);
+                        break;
+                    case 1:
+                        dotTwo.setTranslationY(y);
+                        break;
+                    case 0:
+                        dotThree.setTranslationY(y);
+                        break;
+                }
+            }
+        } else {
+            for (int i = 3; i >= 0; i--) {
+                float y = (float) -(jumpHeight * Math.max(0, Math.sin(time + i / 1.5f)));
+                switch (i) {
+                    case 2:
+                        if(y==0 || lockDotOne) {
+                            lockDotOne = true;
+                            dotOne.setTranslationY(0);
+                        } else {
+                            dotOne.setTranslationY(y);
+                        }
+                        break;
+                    case 1:
+                        if(y==0 || lockDotTwo) {
+                            lockDotTwo = true;
+                            dotOne.setTranslationY(0);
+                        } else {
+                            dotTwo.setTranslationY(y);
+                        }
+                        break;
+                    case 0:
+                        if(y==0 || lockDotThree) {
+                            lockDotThree = true;
+                            dotOne.setTranslationY(0);
+                        } else {
+                            dotThree.setTranslationY(y);
+                        }
+                        break;
+                }
+            }
+            if(lockDotOne && lockDotTwo && lockDotThree){
+                //all are in bottom position
+                this.setWillNotDraw(true);
             }
         }
         invalidate();

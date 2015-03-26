@@ -28,15 +28,17 @@
             android:layout_height="wrap_content"
             android:id="@+id/dots"
             android:textSize="28sp"
-            dots:dotsColor="@android:color/primary_text_light"
-            dots:autoplay="true" />
+            android:textColor="@android:color/primary_text_light"
+            dots:autoplay="false"
+            dots:period="175"/>
 
     </LinearLayout>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Start loading"
+        android:text="stop loading"
+        android:textAllCaps="true"
         android:id="@+id/buttonPlay"
         android:layout_below="@+id/linearLayout"
         android:layout_centerHorizontal="true"

@@ -24,8 +24,10 @@ public class MainActivity extends ActionBarActivity {
             public void onClick(View v) {
                 if(dotsTextView.isPlaying()) {
                     dotsTextView.stop();
+                    buttonPlay.setText("START LOADING");
                 } else {
                     dotsTextView.start();
+                    buttonPlay.setText("STOP LOADING");
                 }
             }
         });
