@@ -4,8 +4,11 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.animation.TranslateAnimation;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -17,10 +20,14 @@ public class DotsTextView extends LinearLayout {
     private TextView dotTwo;
     private TextView dotThree;
 
+    private int textWidth;
+    private int showSpeed = 700;
+
     private int textSize;
     private int jumpHeight;
     private boolean autoPlay;
     private boolean isPlaying;
+    private boolean isHide;
     private int textColor;
     private int period;
     private long startTime;
@@ -28,6 +35,8 @@ public class DotsTextView extends LinearLayout {
     private boolean lockDotOne;
     private boolean lockDotTwo;
     private boolean lockDotThree;
+
+    private Handler handler;
 
 
     public DotsTextView(Context context) {
@@ -47,12 +56,14 @@ public class DotsTextView extends LinearLayout {
 
 
     private void init(Context context, AttributeSet attrs) {
+        handler = new Handler(Looper.getMainLooper());
+
         if(attrs != null){
             TypedArray typedArray = context.obtainStyledAttributes(attrs,R.styleable.WaitingDots);
             textColor = typedArray.getColor(R.styleable.WaitingDots_android_textColor, Color.GRAY);
             period = typedArray.getInt(R.styleable.WaitingDots_period, 175);
             textSize = typedArray.getDimensionPixelSize(R.styleable.WaitingDots_android_textSize, 14);
-            jumpHeight = typedArray.getInt(R.styleable.WaitingDots_jumpHeight, (textSize / 3));
+            jumpHeight = typedArray.getInt(R.styleable.WaitingDots_jumpHeight, (textSize / 4));
             autoPlay = typedArray.getBoolean(R.styleable.WaitingDots_autoplay, true);
             typedArray.recycle();
         }
@@ -78,6 +89,10 @@ public class DotsTextView extends LinearLayout {
         dotOne.setTextColor(textColor);
         dotTwo.setTextColor(textColor);
         dotThree.setTextColor(textColor);
+
+
+        dotOne.measure(0, 0);
+        textWidth = dotOne.getMeasuredWidth();
     }
 
     public void resetPosition() {
@@ -95,6 +110,62 @@ public class DotsTextView extends LinearLayout {
 
     public void stop() {
         isPlaying = false;
+    }
+
+    public void hide() {
+        TranslateAnimation moveRightToLeft = new TranslateAnimation(0, -(textWidth * 2), 0, 0);
+        moveRightToLeft.setDuration(showSpeed);
+        moveRightToLeft.setFillAfter(true);
+
+        dotThree.startAnimation(moveRightToLeft);
+
+        moveRightToLeft = new TranslateAnimation(0, -(textWidth), 0, 0);
+        moveRightToLeft.setDuration(showSpeed);
+        moveRightToLeft.setFillAfter(true);
+
+        dotTwo.startAnimation(moveRightToLeft);
+        isHide = true;
+    }
+
+    public void show() {
+        TranslateAnimation moveRightToLeft = new TranslateAnimation(-(textWidth * 2), 0, 0, 0);
+        moveRightToLeft.setDuration(showSpeed);
+        moveRightToLeft.setFillAfter(true);
+
+        dotThree.startAnimation(moveRightToLeft);
+
+        moveRightToLeft = new TranslateAnimation(-(textWidth), 0, 0, 0);
+        moveRightToLeft.setDuration(showSpeed);
+        moveRightToLeft.setFillAfter(true);
+
+        dotTwo.startAnimation(moveRightToLeft);
+        isHide = false;
+    }
+
+    public void showAndPlay() {
+        show();
+
+        final Runnable r = new Runnable() {
+            public void run() {
+                start();
+            }
+        };
+        handler.postDelayed(r, showSpeed);
+    }
+
+    public void hideAndStop() {
+        hide();
+
+        final Runnable r = new Runnable() {
+            public void run() {
+                stop();
+            }
+        };
+        handler.postDelayed(r, showSpeed);
+    }
+
+    public boolean isHide() {
+        return isHide;
     }
 
     public boolean isPlaying() {
@@ -154,7 +225,7 @@ public class DotsTextView extends LinearLayout {
                     case 1:
                         if(y==0 || lockDotTwo) {
                             lockDotTwo = true;
-                            dotOne.setTranslationY(0);
+                            dotTwo.setTranslationY(0);
                         } else {
                             dotTwo.setTranslationY(y);
                         }
@@ -162,7 +233,7 @@ public class DotsTextView extends LinearLayout {
                     case 0:
                         if(y==0 || lockDotThree) {
                             lockDotThree = true;
-                            dotOne.setTranslationY(0);
+                            dotThree.setTranslationY(0);
                         } else {
                             dotThree.setTranslationY(y);
                         }

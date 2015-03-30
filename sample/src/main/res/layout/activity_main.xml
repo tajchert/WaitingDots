@@ -14,6 +14,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_horizontal"
+        android:layout_marginTop="10dp"
         android:id="@+id/linearLayout">
 
         <TextView
@@ -21,13 +22,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@android:color/primary_text_light"
-            android:textSize="28sp" />
+            android:textSize="45sp" />
 
         <pl.tajchert.sample.DotsTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/dots"
-            android:textSize="28sp"
+            android:textSize="45sp"
             android:textColor="@android:color/primary_text_light"
             dots:autoplay="false"
             dots:period="175"/>
@@ -35,13 +36,33 @@
     </LinearLayout>
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:text="stop loading"
+        android:text="play/pause"
         android:textAllCaps="true"
         android:id="@+id/buttonPlay"
         android:layout_below="@+id/linearLayout"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="42dp" />
+
+    <Button
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:text="show/hide"
+        android:textAllCaps="true"
+        android:id="@+id/buttonHide"
+        android:layout_below="@+id/buttonPlay"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp" />
+
+    <Button
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:text="show/hide with pause"
+        android:textAllCaps="true"
+        android:id="@+id/buttonHideAndStop"
+        android:layout_below="@+id/buttonHide"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp" />
 
 </RelativeLayout>
