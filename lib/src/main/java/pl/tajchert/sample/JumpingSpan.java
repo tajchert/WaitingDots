@@ -7,8 +7,8 @@ import android.text.style.ReplacementSpan;
 
 public class JumpingSpan extends ReplacementSpan {
 
-    private float translationX;
-    private float translationY;
+    private float translationX = 0;
+    private float translationY = 0;
 
     @Override
     public int getSize(Paint paint, CharSequence text, int start, int end, FontMetricsInt fontMetricsInt) {
