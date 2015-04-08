@@ -1,34 +1,30 @@
 package pl.tajchert.sample;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.util.AttributeSet;
-import android.util.TypedValue;
-import android.view.animation.TranslateAnimation;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import pl.tajchert.waitingdots.R;
 
 
-public class DotsTextView extends LinearLayout {
-    private TextView dotOne;
-    private TextView dotTwo;
-    private TextView dotThree;
+public class DotsTextView extends TextView {
+    private JumpingSpan dotOne;
+    private JumpingSpan dotTwo;
+    private JumpingSpan dotThree;
 
-    private int textWidth;
     private int showSpeed = 700;
 
-    private int textSize;
     private int jumpHeight;
     private boolean autoPlay;
     private boolean isPlaying;
     private boolean isHide;
-    private int textColor;
     private int period;
     private long startTime;
 
@@ -60,39 +56,26 @@ public class DotsTextView extends LinearLayout {
 
         if(attrs != null){
             TypedArray typedArray = context.obtainStyledAttributes(attrs,R.styleable.WaitingDots);
-            textColor = typedArray.getColor(R.styleable.WaitingDots_android_textColor, Color.GRAY);
             period = typedArray.getInt(R.styleable.WaitingDots_period, 175);
-            textSize = typedArray.getDimensionPixelSize(R.styleable.WaitingDots_android_textSize, 14);
-            jumpHeight = typedArray.getInt(R.styleable.WaitingDots_jumpHeight, (textSize / 4));
+            jumpHeight = typedArray.getInt(R.styleable.WaitingDots_jumpHeight, (int)(getTextSize() / 4));
             autoPlay = typedArray.getBoolean(R.styleable.WaitingDots_autoplay, true);
             typedArray.recycle();
         }
         resetPosition();
-        inflate(getContext(), R.layout.dots_text_view, this);
-        dotOne = (TextView) findViewById(R.id.dot1);
-        dotTwo = (TextView) findViewById(R.id.dot2);
-        dotThree = (TextView) findViewById(R.id.dot3);
+        dotOne = new JumpingSpan();
+        dotTwo = new JumpingSpan();
+        dotThree = new JumpingSpan();
+
+        SpannableString spannable = new SpannableString("...");
+        spannable.setSpan(dotOne, 0, 1, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        spannable.setSpan(dotTwo, 1, 2, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        spannable.setSpan(dotThree, 2, 3, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        setText(spannable);
 
         if(autoPlay){
             this.setWillNotDraw(false);
         }
         isPlaying = autoPlay;
-
-        updateStyle();
-    }
-
-    private void updateStyle(){
-        dotOne.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-        dotTwo.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-        dotThree.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-
-        dotOne.setTextColor(textColor);
-        dotTwo.setTextColor(textColor);
-        dotThree.setTextColor(textColor);
-
-
-        dotOne.measure(0, 0);
-        textWidth = dotOne.getMeasuredWidth();
     }
 
     public void resetPosition() {
@@ -113,32 +96,30 @@ public class DotsTextView extends LinearLayout {
     }
 
     public void hide() {
-        TranslateAnimation moveRightToLeft = new TranslateAnimation(0, -(textWidth * 2), 0, 0);
-        moveRightToLeft.setDuration(showSpeed);
-        moveRightToLeft.setFillAfter(true);
+        float textWidth = getPaint().measureText(".", 0, 1);
+        ObjectAnimator dotThreeMoveRightToLeft = ObjectAnimator.ofFloat(dotThree, "translationX", 0, -(textWidth * 2));
+        dotThreeMoveRightToLeft.setDuration(showSpeed);
 
-        dotThree.startAnimation(moveRightToLeft);
+        dotThreeMoveRightToLeft.start();
 
-        moveRightToLeft = new TranslateAnimation(0, -(textWidth), 0, 0);
-        moveRightToLeft.setDuration(showSpeed);
-        moveRightToLeft.setFillAfter(true);
+        ObjectAnimator dotTwoMoveRightToLeft = ObjectAnimator.ofFloat(dotTwo, "translationX", 0, -(textWidth));
+        dotTwoMoveRightToLeft.setDuration(showSpeed);
 
-        dotTwo.startAnimation(moveRightToLeft);
+        dotTwoMoveRightToLeft.start();
         isHide = true;
     }
 
     public void show() {
-        TranslateAnimation moveRightToLeft = new TranslateAnimation(-(textWidth * 2), 0, 0, 0);
-        moveRightToLeft.setDuration(showSpeed);
-        moveRightToLeft.setFillAfter(true);
+        float textWidth = getPaint().measureText(".", 0, 1);
+        ObjectAnimator dotThreeMoveRightToLeft = ObjectAnimator.ofFloat(dotThree, "translationX", -(textWidth * 2), 0);
+        dotThreeMoveRightToLeft.setDuration(showSpeed);
 
-        dotThree.startAnimation(moveRightToLeft);
+        dotThreeMoveRightToLeft.start();
 
-        moveRightToLeft = new TranslateAnimation(-(textWidth), 0, 0, 0);
-        moveRightToLeft.setDuration(showSpeed);
-        moveRightToLeft.setFillAfter(true);
+        ObjectAnimator dotTwoMoveRightToLeft = ObjectAnimator.ofFloat(dotTwo, "translationX", -(textWidth), 0);
+        dotTwoMoveRightToLeft.setDuration(showSpeed);
 
-        dotTwo.startAnimation(moveRightToLeft);
+        dotTwoMoveRightToLeft.start();
         isHide = false;
     }
 
@@ -170,16 +151,6 @@ public class DotsTextView extends LinearLayout {
 
     public boolean isPlaying() {
         return isPlaying;
-    }
-
-    public void setDotsColor(int dotsColor) {
-        textColor = dotsColor;
-        updateStyle();
-    }
-
-    public void setDotsSize(int dotsSize) {
-        textSize = dotsSize;
-        updateStyle();
     }
 
     public void setJumpHeight(int jumpHeight) {
