@@ -1,34 +1,34 @@
 package pl.tajchert.sample;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.TypeEvaluator;
+import android.animation.ValueAnimator;
+import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.util.AttributeSet;
-import android.util.TypedValue;
-import android.view.animation.TranslateAnimation;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import pl.tajchert.waitingdots.R;
 
+public class DotsTextView extends TextView {
 
-public class DotsTextView extends LinearLayout {
-    private TextView dotOne;
-    private TextView dotTwo;
-    private TextView dotThree;
+    private JumpingSpan dotOne;
+    private JumpingSpan dotTwo;
+    private JumpingSpan dotThree;
 
-    private int textWidth;
     private int showSpeed = 700;
 
-    private int textSize;
     private int jumpHeight;
     private boolean autoPlay;
     private boolean isPlaying;
     private boolean isHide;
-    private int textColor;
     private int period;
     private long startTime;
 
@@ -37,7 +37,8 @@ public class DotsTextView extends LinearLayout {
     private boolean lockDotThree;
 
     private Handler handler;
-
+    private AnimatorSet mAnimatorSet = new AnimatorSet();
+    private float textWidth;
 
     public DotsTextView(Context context) {
         super(context);
@@ -54,114 +55,134 @@ public class DotsTextView extends LinearLayout {
         init(context, attrs);
     }
 
-
     private void init(Context context, AttributeSet attrs) {
         handler = new Handler(Looper.getMainLooper());
 
-        if(attrs != null){
-            TypedArray typedArray = context.obtainStyledAttributes(attrs,R.styleable.WaitingDots);
-            textColor = typedArray.getColor(R.styleable.WaitingDots_android_textColor, Color.GRAY);
-            period = typedArray.getInt(R.styleable.WaitingDots_period, 175);
-            textSize = typedArray.getDimensionPixelSize(R.styleable.WaitingDots_android_textSize, 14);
-            jumpHeight = typedArray.getInt(R.styleable.WaitingDots_jumpHeight, (textSize / 4));
+        if (attrs != null) {
+            TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.WaitingDots);
+            period = typedArray.getInt(R.styleable.WaitingDots_period, 6000);
+            jumpHeight = typedArray.getInt(R.styleable.WaitingDots_jumpHeight, (int) (getTextSize() / 4));
             autoPlay = typedArray.getBoolean(R.styleable.WaitingDots_autoplay, true);
             typedArray.recycle();
         }
-        resetPosition();
-        inflate(getContext(), R.layout.dots_text_view, this);
-        dotOne = (TextView) findViewById(R.id.dot1);
-        dotTwo = (TextView) findViewById(R.id.dot2);
-        dotThree = (TextView) findViewById(R.id.dot3);
+        dotOne = new JumpingSpan();
+        dotTwo = new JumpingSpan();
+        dotThree = new JumpingSpan();
 
-        if(autoPlay){
-            this.setWillNotDraw(false);
-        }
+        SpannableString spannable = new SpannableString("...");
+        spannable.setSpan(dotOne, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannable.setSpan(dotTwo, 1, 2, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannable.setSpan(dotThree, 2, 3, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        setText(spannable, BufferType.SPANNABLE);
+
+        textWidth = getPaint().measureText(".", 0, 1);
+
+        ObjectAnimator dotOneJumpAnimator = createDotJumpAnimator(dotOne, 0);
+        dotOneJumpAnimator.addUpdateListener(new AnimatorUpdateListener() {
+
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                invalidate();
+            }
+        });
+        mAnimatorSet.playTogether(dotOneJumpAnimator, createDotJumpAnimator(dotTwo,
+                period / 6), createDotJumpAnimator(dotThree, period * 2 / 6));
+
         isPlaying = autoPlay;
-
-        updateStyle();
-    }
-
-    private void updateStyle(){
-        dotOne.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-        dotTwo.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-        dotThree.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-
-        dotOne.setTextColor(textColor);
-        dotTwo.setTextColor(textColor);
-        dotThree.setTextColor(textColor);
-
-
-        dotOne.measure(0, 0);
-        textWidth = dotOne.getMeasuredWidth();
-    }
-
-    public void resetPosition() {
-        startTime = System.currentTimeMillis() + period;
     }
 
     public void start() {
         isPlaying = true;
-        lockDotOne = false;
-        lockDotTwo = false;
-        lockDotThree = false;
-        resetPosition();
-        this.setWillNotDraw(false);
+        setAllAnimationsRepeatCount(ValueAnimator.INFINITE);
+        mAnimatorSet.start();
+    }
+
+    private ObjectAnimator createDotJumpAnimator(JumpingSpan jumpingSpan, long delay) {
+        ObjectAnimator jumpAnimator = ObjectAnimator.ofFloat(jumpingSpan, "translationY", 0, -jumpHeight);
+        jumpAnimator.setEvaluator(new TypeEvaluator<Number>() {
+
+            @Override
+            public Number evaluate(float fraction, Number from, Number to) {
+                return Math.max(0, Math.sin(fraction * Math.PI * 2)) * (to.floatValue() - from.floatValue());
+            }
+        });
+        jumpAnimator.setDuration(period);
+        jumpAnimator.setStartDelay(delay);
+        jumpAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        jumpAnimator.setRepeatMode(ValueAnimator.RESTART);
+        return jumpAnimator;
     }
 
     public void stop() {
         isPlaying = false;
+        setAllAnimationsRepeatCount(0);
+    }
+
+    private void setAllAnimationsRepeatCount(int repeatCount) {
+        for (Animator animator : mAnimatorSet.getChildAnimations()) {
+            if (animator instanceof ObjectAnimator) {
+                ((ObjectAnimator) animator).setRepeatCount(repeatCount);
+            }
+        }
     }
 
     public void hide() {
-        TranslateAnimation moveRightToLeft = new TranslateAnimation(0, -(textWidth * 2), 0, 0);
-        moveRightToLeft.setDuration(showSpeed);
-        moveRightToLeft.setFillAfter(true);
 
-        dotThree.startAnimation(moveRightToLeft);
+        createDotHideAnimator(dotThree, 2).start();
 
-        moveRightToLeft = new TranslateAnimation(0, -(textWidth), 0, 0);
-        moveRightToLeft.setDuration(showSpeed);
-        moveRightToLeft.setFillAfter(true);
+        ObjectAnimator dotTwoMoveRightToLeft = createDotHideAnimator(dotTwo, 1);
+        dotTwoMoveRightToLeft.addUpdateListener(new AnimatorUpdateListener() {
 
-        dotTwo.startAnimation(moveRightToLeft);
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                invalidate();
+            }
+        });
+
+        dotTwoMoveRightToLeft.start();
         isHide = true;
     }
 
     public void show() {
-        TranslateAnimation moveRightToLeft = new TranslateAnimation(-(textWidth * 2), 0, 0, 0);
-        moveRightToLeft.setDuration(showSpeed);
-        moveRightToLeft.setFillAfter(true);
+        ObjectAnimator dotThreeMoveRightToLeft = createDotShowAnimator(dotThree, 2);
 
-        dotThree.startAnimation(moveRightToLeft);
+        dotThreeMoveRightToLeft.start();
 
-        moveRightToLeft = new TranslateAnimation(-(textWidth), 0, 0, 0);
-        moveRightToLeft.setDuration(showSpeed);
-        moveRightToLeft.setFillAfter(true);
+        ObjectAnimator dotTwoMoveRightToLeft = createDotShowAnimator(dotTwo, 1);
+        dotTwoMoveRightToLeft.addUpdateListener(new AnimatorUpdateListener() {
 
-        dotTwo.startAnimation(moveRightToLeft);
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                invalidate();
+            }
+        });
+
+        dotTwoMoveRightToLeft.start();
         isHide = false;
+    }
+
+    private ObjectAnimator createDotHideAnimator(JumpingSpan span, float widthMultiplier) {
+        return createDotHorizontalAnimator(span, 0, -textWidth * widthMultiplier);
+    }
+
+    private ObjectAnimator createDotShowAnimator(JumpingSpan span, int widthMultiplier) {
+        return createDotHorizontalAnimator(span, -textWidth * widthMultiplier, 0);
+    }
+
+    private ObjectAnimator createDotHorizontalAnimator(JumpingSpan span, float from, float to) {
+        ObjectAnimator dotThreeMoveRightToLeft = ObjectAnimator.ofFloat(span, "translationX", from, to);
+        dotThreeMoveRightToLeft.setDuration(showSpeed);
+        return dotThreeMoveRightToLeft;
     }
 
     public void showAndPlay() {
         show();
-
-        final Runnable r = new Runnable() {
-            public void run() {
-                start();
-            }
-        };
-        handler.postDelayed(r, showSpeed);
+        start();
     }
 
     public void hideAndStop() {
         hide();
-
-        final Runnable r = new Runnable() {
-            public void run() {
-                stop();
-            }
-        };
-        handler.postDelayed(r, showSpeed);
+        stop();
     }
 
     public boolean isHide() {
@@ -172,79 +193,11 @@ public class DotsTextView extends LinearLayout {
         return isPlaying;
     }
 
-    public void setDotsColor(int dotsColor) {
-        textColor = dotsColor;
-        updateStyle();
-    }
-
-    public void setDotsSize(int dotsSize) {
-        textSize = dotsSize;
-        updateStyle();
-    }
-
     public void setJumpHeight(int jumpHeight) {
         this.jumpHeight = jumpHeight;
     }
 
     public void setPeriod(int period) {
         this.period = period;
-    }
-
-    @Override
-    public void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        float time = (float)(System.currentTimeMillis() - startTime) / period;
-
-        if(isPlaying) {
-            for (int i = 3; i >= 0; i--) {
-                float y = (float) -(jumpHeight * Math.max(0, Math.sin(time + i / 1.5f)));
-                switch (i) {
-                    case 2:
-                        dotOne.setTranslationY(y);
-                        break;
-                    case 1:
-                        dotTwo.setTranslationY(y);
-                        break;
-                    case 0:
-                        dotThree.setTranslationY(y);
-                        break;
-                }
-            }
-        } else {
-            for (int i = 3; i >= 0; i--) {
-                float y = (float) -(jumpHeight * Math.max(0, Math.sin(time + i / 1.5f)));
-                switch (i) {
-                    case 2:
-                        if(y==0 || lockDotOne) {
-                            lockDotOne = true;
-                            dotOne.setTranslationY(0);
-                        } else {
-                            dotOne.setTranslationY(y);
-                        }
-                        break;
-                    case 1:
-                        if(y==0 || lockDotTwo) {
-                            lockDotTwo = true;
-                            dotTwo.setTranslationY(0);
-                        } else {
-                            dotTwo.setTranslationY(y);
-                        }
-                        break;
-                    case 0:
-                        if(y==0 || lockDotThree) {
-                            lockDotThree = true;
-                            dotThree.setTranslationY(0);
-                        } else {
-                            dotThree.setTranslationY(y);
-                        }
-                        break;
-                }
-            }
-            if(lockDotOne && lockDotTwo && lockDotThree){
-                //all are in bottom position
-                this.setWillNotDraw(true);
-            }
-        }
-        invalidate();
     }
 }
