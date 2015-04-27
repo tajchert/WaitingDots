@@ -22,7 +22,7 @@ xmlns:dots="http://schemas.android.com/apk/res-auto"
     android:textSize="45sp"
     android:textColor="@android:color/text_color"
     dots:autoplay="false"
-    dots:period="175"/>
+    dots:period="1000"/>
 ```
 All aditional parameters are optional.
 
@@ -48,3 +48,5 @@ dots.isPlaying();
 [Polidea](https://www.polidea.com/) - time, atmosphere and motivation to create outstanding things.
 
 [Zielony](https://github.com/ZieIony) - many tips and initial commit.
+
+[Krzysztof Bielicki](https://github.com/krzysiekbielicki) - nice pull request that optimised performance and added text Appearance support (0.1.0 -> 0.2.0).
