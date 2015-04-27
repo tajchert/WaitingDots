@@ -7,7 +7,7 @@ Small library that provides... bouncing dots. This feature is used in number of 
 
 Gradle depedency:
 ```gradle
-    compile 'pl.tajchert:waitingdots:0.1.0'
+    compile 'pl.tajchert:waitingdots:0.2.0'
 ```
 
 Code to make it work:
