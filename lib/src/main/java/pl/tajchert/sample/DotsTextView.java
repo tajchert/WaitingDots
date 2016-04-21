@@ -89,7 +89,7 @@ public class DotsTextView extends TextView {
                 period / 6), createDotJumpAnimator(dotThree, period * 2 / 6));
 
         isPlaying = autoPlay;
-        if(autoPlay) {
+        if (autoPlay && !isInEditMode()) {
             start();
         }
     }
