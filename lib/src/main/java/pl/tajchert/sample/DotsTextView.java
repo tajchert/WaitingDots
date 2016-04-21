@@ -69,7 +69,7 @@ public class DotsTextView extends TextView {
         dotTwo = new JumpingSpan();
         dotThree = new JumpingSpan();
 
-        SpannableString spannable = new SpannableString("...");
+        SpannableString spannable = new SpannableString("...\u200B");
         spannable.setSpan(dotOne, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         spannable.setSpan(dotTwo, 1, 2, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         spannable.setSpan(dotThree, 2, 3, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
