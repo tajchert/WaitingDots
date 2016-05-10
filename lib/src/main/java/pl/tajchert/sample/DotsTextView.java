@@ -3,9 +3,7 @@ package pl.tajchert.sample;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
-import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Handler;
@@ -14,7 +12,6 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.util.AttributeSet;
 import android.widget.TextView;
-
 import pl.tajchert.waitingdots.R;
 
 public class DotsTextView extends TextView {
@@ -61,7 +58,8 @@ public class DotsTextView extends TextView {
         if (attrs != null) {
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.WaitingDots);
             period = typedArray.getInt(R.styleable.WaitingDots_period, 6000);
-            jumpHeight = typedArray.getInt(R.styleable.WaitingDots_jumpHeight, (int) (getTextSize() / 4));
+            jumpHeight = typedArray.getInt(
+                R.styleable.WaitingDots_jumpHeight, (int) (getTextSize() / 4));
             autoPlay = typedArray.getBoolean(R.styleable.WaitingDots_autoplay, true);
             typedArray.recycle();
         }
@@ -78,13 +76,8 @@ public class DotsTextView extends TextView {
         textWidth = getPaint().measureText(".", 0, 1);
 
         ObjectAnimator dotOneJumpAnimator = createDotJumpAnimator(dotOne, 0);
-        dotOneJumpAnimator.addUpdateListener(new AnimatorUpdateListener() {
+        dotOneJumpAnimator.addUpdateListener(new InvalidateViewOnUpdate(this));
 
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                invalidate();
-            }
-        });
         mAnimatorSet.playTogether(dotOneJumpAnimator, createDotJumpAnimator(dotTwo,
                 period / 6), createDotJumpAnimator(dotThree, period * 2 / 6));
 
@@ -102,13 +95,9 @@ public class DotsTextView extends TextView {
 
     private ObjectAnimator createDotJumpAnimator(JumpingSpan jumpingSpan, long delay) {
         ObjectAnimator jumpAnimator = ObjectAnimator.ofFloat(jumpingSpan, "translationY", 0, -jumpHeight);
-        jumpAnimator.setEvaluator(new TypeEvaluator<Number>() {
 
-            @Override
-            public Number evaluate(float fraction, Number from, Number to) {
-                return Math.max(0, Math.sin(fraction * Math.PI * 2)) * (to.floatValue() - from.floatValue());
-            }
-        });
+        jumpAnimator.setEvaluator(new SinTypeEvaluator());
+
         jumpAnimator.setDuration(period);
         jumpAnimator.setStartDelay(delay);
         jumpAnimator.setRepeatCount(ValueAnimator.INFINITE);
@@ -134,13 +123,7 @@ public class DotsTextView extends TextView {
         createDotHideAnimator(dotThree, 2).start();
 
         ObjectAnimator dotTwoMoveRightToLeft = createDotHideAnimator(dotTwo, 1);
-        dotTwoMoveRightToLeft.addUpdateListener(new AnimatorUpdateListener() {
-
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                invalidate();
-            }
-        });
+        dotTwoMoveRightToLeft.addUpdateListener(new InvalidateViewOnUpdate(this));
 
         dotTwoMoveRightToLeft.start();
         isHide = true;
@@ -152,13 +135,7 @@ public class DotsTextView extends TextView {
         dotThreeMoveRightToLeft.start();
 
         ObjectAnimator dotTwoMoveRightToLeft = createDotShowAnimator(dotTwo, 1);
-        dotTwoMoveRightToLeft.addUpdateListener(new AnimatorUpdateListener() {
-
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                invalidate();
-            }
-        });
+        dotTwoMoveRightToLeft.addUpdateListener(new InvalidateViewOnUpdate(this));
 
         dotTwoMoveRightToLeft.start();
         isHide = false;
