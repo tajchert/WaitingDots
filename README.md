@@ -5,9 +5,20 @@
 
 Small library that provides... bouncing dots. This feature is used in number of messaging apps (such as Hangouts or Messenger), and lately in Android TV (for example when connecting to Wifi).
 
+
 Gradle depedency:
+Add Jitpack in your root build.gradle at the end of repositories:
 ```gradle
-    compile 'pl.tajchert:waitingdots:0.2.0'
+	allprojects {
+		repositories {
+			...
+			maven { url "https://jitpack.io" }
+		}
+	}
+```
+Add the dependency itself:
+```gradle
+    compile 'com.github.tajchert:WaitingDots:0.3.0'
 ```
 
 Code to make it work:
