@@ -18,7 +18,7 @@ Add Jitpack in your root build.gradle at the end of repositories:
 ```
 Add the dependency itself:
 ```gradle
-    compile 'com.github.tajchert:WaitingDots:0.3.0'
+    compile 'com.github.tajchert:WaitingDots:0.3.2'
 ```
 
 Code to make it work:
