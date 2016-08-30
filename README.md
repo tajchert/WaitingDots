@@ -1,5 +1,5 @@
 #WaitingDots
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/pl.tajchert/waitingdots/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/pl.tajchert/waitingdots)
+[![](https://jitpack.io/v/tajchert/WaitingDots.svg)](https://jitpack.io/#tajchert/WaitingDots)
 
 ![Loading animation](https://raw.githubusercontent.com/tajchert/WaitingDots/master/images/dotsLoadingAnimation.gif)
 
