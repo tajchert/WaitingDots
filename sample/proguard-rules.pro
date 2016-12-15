@@ -15,3 +15,7 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+#Otherwise dots won't animate or move
+-dontwarn pl.tajchert.waitingdots.**
+-keep public class pl.tajchert.waitingdots.** { public protected private *; }
