@@ -5,7 +5,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.Button;
 
-import pl.tajchert.sample.DotsTextView;
+import pl.tajchert.waitingdots.DotsTextView;
 
 
 public class MainActivity extends ActionBarActivity {

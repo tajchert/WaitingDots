@@ -1,4 +1,4 @@
-package pl.tajchert.sample;
+package pl.tajchert.waitingdots;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;

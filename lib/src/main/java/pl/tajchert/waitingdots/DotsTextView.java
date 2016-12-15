@@ -1,4 +1,4 @@
-package pl.tajchert.sample;
+package pl.tajchert.waitingdots;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
@@ -12,7 +12,6 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.util.AttributeSet;
 import android.widget.TextView;
-import pl.tajchert.waitingdots.R;
 
 public class DotsTextView extends TextView {
 

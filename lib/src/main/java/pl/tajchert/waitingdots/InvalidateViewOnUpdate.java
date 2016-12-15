@@ -1,4 +1,4 @@
-package pl.tajchert.sample;
+package pl.tajchert.waitingdots;
 
 import android.animation.ValueAnimator;
 import android.view.View;
