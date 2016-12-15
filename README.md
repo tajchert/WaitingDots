@@ -6,7 +6,10 @@
 Small library that provides... bouncing dots. This feature is used in number of messaging apps (such as Hangouts or Messenger), and lately in Android TV (for example when connecting to Wifi).
 
 
-Gradle depedency:
+###Gradle depedency
+```gradle
+    compile 'com.github.tajchert:WaitingDots:0.4.0'
+```
 Add Jitpack in your root build.gradle at the end of repositories:
 ```gradle
 	allprojects {
@@ -16,17 +19,14 @@ Add Jitpack in your root build.gradle at the end of repositories:
 		}
 	}
 ```
-Add the dependency itself:
-```gradle
-    compile 'com.github.tajchert:WaitingDots:0.3.2'
-```
 
-Code to make it work:
+
+###Example
 ```xml
 ...
 xmlns:dots="http://schemas.android.com/apk/res-auto"
 ...
-<pl.tajchert.sample.DotsTextView
+<pl.tajchert.waitingdots.DotsTextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:id="@+id/dots"
@@ -51,6 +51,14 @@ dots.showAndPlay();
 dots.isHide();
 dots.isPlaying();
 ```
+
+
+###Proguard
+```
+-dontwarn pl.tajchert.waitingdots.**
+-keep public class pl.tajchert.waitingdots.** { public protected private *; }
+```
+
 
 ###Thanks goes to:
 
