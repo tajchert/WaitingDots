@@ -1,14 +1,16 @@
-#WaitingDots
+# WaitingDots
 [![](https://jitpack.io/v/tajchert/WaitingDots.svg)](https://jitpack.io/#tajchert/WaitingDots)
+
+[![](https://jitci.com/gh/tajchert/WaitingDots/svg)](https://jitci.com/gh/tajchert/WaitingDots)
 
 ![Loading animation](https://raw.githubusercontent.com/tajchert/WaitingDots/master/images/dotsLoadingAnimation.gif)
 
 Small library that provides... bouncing dots. This feature is used in number of messaging apps (such as Hangouts or Messenger), and lately in Android TV (for example when connecting to Wifi).
 
 
-###Gradle depedency
+### Gradle depedency
 ```gradle
-    compile 'com.github.tajchert:WaitingDots:0.4.0'
+    implementation 'com.github.tajchert:WaitingDots:0.6.1'
 ```
 Add Jitpack in your root build.gradle at the end of repositories:
 ```gradle
@@ -21,7 +23,7 @@ Add Jitpack in your root build.gradle at the end of repositories:
 ```
 
 
-###Example
+### Example
 ```xml
 ...
 xmlns:dots="http://schemas.android.com/apk/res-auto"
@@ -53,14 +55,21 @@ dots.isPlaying();
 ```
 
 
-###Proguard
+### Proguard
 ```
 -dontwarn pl.tajchert.waitingdots.**
 -keep public class pl.tajchert.waitingdots.** { public protected private *; }
 ```
 
 
-###Thanks goes to:
+### AndroidX and Kotlin
+Kotlin since version 0.6.1.
+AndroidX since 0.6.0.
+Last build without AndroidX: 0.5.2.
+
+
+
+### Thanks goes to:
 
 <img src="images/polideaLogo.jpg" width="150" height="150"/>
 
